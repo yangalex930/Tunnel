@@ -128,6 +128,7 @@ public class ImageGridActivity extends Activity implements ActionMode.Callback {
         imgAdapter.clearAll();
         if (folderBitmap != null && !folderBitmap.isRecycled()) {
             folderBitmap.recycle();
+            folderBitmap = null;
         }
     }
 
@@ -349,6 +350,10 @@ public class ImageGridActivity extends Activity implements ActionMode.Callback {
     public void onDestroyActionMode(ActionMode actionMode) {
         this.actionMode = null;
         imgAdapter.clearSelection();
+        if (folderBitmap != null && !folderBitmap.isRecycled()) {
+            folderBitmap.recycle();
+            folderBitmap = null;
+        }
         if (needRefresh) {
             refresh();
         }
@@ -366,7 +371,7 @@ public class ImageGridActivity extends Activity implements ActionMode.Callback {
                     Bitmap bitmap = null;
                     try {
                         if (file.isDirectory()) {
-                            if (folderBitmap == null) {
+                            if (folderBitmap == null || folderBitmap.isRecycled()) {
                                 folderBitmap = BitmapUtil.getImageThumbnail(R.drawable.file_folder, dftWidth, dftHight);
                             }
                             bitmap = folderBitmap;
