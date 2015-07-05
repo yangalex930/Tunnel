@@ -1,6 +1,8 @@
 package com.Tunnel.app.util;
 
-import java.io.File;
+import java.io.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author yupeng.yyp
@@ -91,5 +93,48 @@ public class FileUtil {
                 ;
         }
         return srcDir.delete();
+    }
+
+    static int BUFFER = 2048;
+    public static boolean zipFiles(File file) {
+        boolean ret = false;
+        try {
+            FileOutputStream fos = new FileOutputStream(new File(file.getPath() + ".zip"));
+            ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(fos));
+            ret = zipFilesImpl(file, zos);
+            zos.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+    private static boolean zipFilesImpl(File file, ZipOutputStream zos) {
+        try {
+            byte data[] = new byte[BUFFER];
+            File files[] = file.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    if (!zipFilesImpl(files[i], zos)) {
+                        return false;
+                    }
+                } else {
+                    FileInputStream fi = new FileInputStream(files[i]);
+                    BufferedInputStream bis = new BufferedInputStream(fi, BUFFER);
+                    ZipEntry entry = new ZipEntry(file.getName() + "/" + files[i].getName());
+                    zos.putNextEntry(entry);
+                    int count;
+                    while ((count = bis.read(data, 0, BUFFER)) != -1) {
+                        zos.write(data, 0, count);
+                    }
+                    zos.closeEntry();
+                    bis.close();
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

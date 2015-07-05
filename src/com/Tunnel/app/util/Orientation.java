@@ -16,8 +16,8 @@ public class Orientation {
 
     public static float X = 0.0f;
     public static float Y = 0.0f;
-    private static Map<Float, Float> posCorrectionMap;
-    private static Map<Float, Float> negCorrectionMap;
+    private static Map<Float, Float> posCorrectionMap = new HashMap<Float, Float>();
+    private static Map<Float, Float> negCorrectionMap = new HashMap<Float, Float>();
 
     public static float adjustDegree(float degree)
     {
@@ -56,24 +56,20 @@ public class Orientation {
     }
 
     public static void restoreCorrection() {
-        if (negCorrectionMap == null || posCorrectionMap == null) {
-            negCorrectionMap = new HashMap<Float, Float>();
-            SharedPreferences sp = TunnelApplication.getInstance().getSharedPreferences("Pref", Context.MODE_PRIVATE);
-            Set<String> set = sp.getStringSet("negCorrectionMap", null);
-            if (set != null) {
-                for (String s : set) {
-                    String[] split = s.split(";");
-                    negCorrectionMap.put(Float.valueOf(split[0]), Float.valueOf(split[1]));
-                }
+        SharedPreferences sp = TunnelApplication.getInstance().getSharedPreferences("Pref", Context.MODE_PRIVATE);
+        Set<String> set = sp.getStringSet("negCorrectionMap", null);
+        if (set != null) {
+            for (String s : set) {
+                String[] split = s.split(";");
+                negCorrectionMap.put(Float.valueOf(split[0]), Float.valueOf(split[1]));
             }
+        }
 
-            posCorrectionMap = new HashMap<Float, Float>();
-            set = sp.getStringSet("posCorrectionMap", null);
-            if (set != null) {
-                for (String s : set) {
-                    String [] split = s.split(";");
-                    posCorrectionMap.put(Float.valueOf(split[0]), Float.valueOf(split[1]));
-                }
+        set = sp.getStringSet("posCorrectionMap", null);
+        if (set != null) {
+            for (String s : set) {
+                String [] split = s.split(";");
+                posCorrectionMap.put(Float.valueOf(split[0]), Float.valueOf(split[1]));
             }
         }
     }

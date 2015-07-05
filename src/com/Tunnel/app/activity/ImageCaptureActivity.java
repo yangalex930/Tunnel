@@ -1,5 +1,6 @@
 package com.Tunnel.app.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.hardware.Camera.ShutterCallback;
 import android.hardware.Sensor;
@@ -7,6 +8,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
@@ -31,7 +33,13 @@ public class ImageCaptureActivity extends Activity implements SensorEventListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        if (!android.os.Build.MANUFACTURER.toUpperCase().contains("MEIZU")) {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+        } else {
+            ActionBar actionBar = getActionBar();
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
         setContentView(R.layout.image_capture);
 
         takePic = (ImageButton) this.findViewById(R.id.mid);
@@ -57,6 +65,16 @@ public class ImageCaptureActivity extends Activity implements SensorEventListene
 
         if (GlobalSwitch.bCorrectionMode) {
             Toast.makeText(this, R.string.correction_indicate, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

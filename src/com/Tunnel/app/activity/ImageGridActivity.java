@@ -99,6 +99,7 @@ public class ImageGridActivity extends Activity implements ActionMode.Callback {
                 }
             }
         });
+
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -197,10 +198,6 @@ public class ImageGridActivity extends Activity implements ActionMode.Callback {
             item = menu.add(Menu.FIRST, R.string.rename, 0, R.string.rename);
             item.setTitle(R.string.rename);
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
-            item = menu.add(Menu.FIRST, R.string.project_upload, 0, R.string.project_upload);
-            item.setTitle(R.string.project_upload);
-            item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
         }
 
         if (level == 1) {
@@ -226,6 +223,9 @@ public class ImageGridActivity extends Activity implements ActionMode.Callback {
         {
             MenuItem item = menu.findItem(R.string.rename);
             item.setVisible(imgAdapter.getSelectedCount() == 1);
+
+            item = menu.findItem(R.string.pic_upload);
+            item.setVisible(imgAdapter.getSelectedCount() == 1);
         }
         return false;
     }
@@ -240,20 +240,10 @@ public class ImageGridActivity extends Activity implements ActionMode.Callback {
                         List<Boolean> selectedList = imgAdapter.getSelectedList();
                         for (int index = 0; index < selectedList.size(); index++) {
                             if (selectedList.get(index)) {
-                                if (level == 0)
-                                {
+                                if (level == 0) {
                                     ProjectUtil.deleteProject(files[index].getName());
-                                    FileUtil.deleteFile(files[index]);
                                 }
-                                else if (level == 1)
-                                {
-                                    FileUtil.deleteFile(files[index]);
-                                }
-                                else if (level == 2)
-                                {
-                                    FileUtil.deleteFile(files[index]);
-                                }
-
+                                FileUtil.deleteFile(files[index]);
                             }
                         }
                         needRefresh = true;
@@ -308,18 +298,15 @@ public class ImageGridActivity extends Activity implements ActionMode.Callback {
                         }
                     }).create().show();
         }
-        else if (menuItem.getItemId() == R.string.pic_upload || menuItem.getItemId() == R.string.pic_upload)
+        else if (menuItem.getItemId() == R.string.pic_upload)
         {
-            new AlertDialog.Builder(ImageGridActivity.this)
-                    .setMessage(getResources().getString(R.string.feature_not_avalible))
-                    .setPositiveButton(getResources().getString(R.string.ok),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    actionMode.finish();
-                                }
-                            })
-                    .create().show();
+            if (imgAdapter.getSelectedCount() == 1) {
+                File file = files[imgAdapter.getFirstSelectIndex()];
+                if (!FileUtil.zipFiles(file)) {
+                    Toast.makeText(this, "压缩文件失败", Toast.LENGTH_LONG).show();
+                }
+                actionMode.finish();
+            }
         }
         else if (menuItem.getItemId() == R.string.rename)
         {
@@ -350,10 +337,6 @@ public class ImageGridActivity extends Activity implements ActionMode.Callback {
     public void onDestroyActionMode(ActionMode actionMode) {
         this.actionMode = null;
         imgAdapter.clearSelection();
-        if (folderBitmap != null && !folderBitmap.isRecycled()) {
-            folderBitmap.recycle();
-            folderBitmap = null;
-        }
         if (needRefresh) {
             refresh();
         }

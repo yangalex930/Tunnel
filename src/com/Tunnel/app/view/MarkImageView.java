@@ -295,11 +295,15 @@ public class MarkImageView extends ImageView {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Point point = ImageProcessUtil.adjustPoint(((BitmapDrawable)getDrawable()).getBitmap(), srcRect, new Point((int)(x * wScale), (int)(y * hScale)));
-                        if (point != null) {
-                            end.x = (int)(point.x / wScale);
-                            end.y = (int)(point.y / hScale);
-                            invalidate();
+                        try {
+                            Point point = ImageProcessUtil.adjustPoint(((BitmapDrawable) getDrawable()).getBitmap(), srcRect, new Point((int) (x * wScale), (int) (y * hScale)));
+                            if (point != null) {
+                                end.x = (int) (point.x / wScale);
+                                end.y = (int) (point.y / hScale);
+                                invalidate();
+                            }
+                        }catch (Exception e) {
+
                         }
                     }
                 });
@@ -317,11 +321,15 @@ public class MarkImageView extends ImageView {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Point point = ImageProcessUtil.adjustPoint(((BitmapDrawable)getDrawable()).getBitmap(), srcRect, new Point((int)(x * wScale), (int)(y * hScale)));
-                        if (point != null) {
-                            end.x = (int)(point.x / wScale);
-                            end.y = (int)(point.y / hScale);
-                            invalidate();
+                        try {
+                            Point point = ImageProcessUtil.adjustPoint(((BitmapDrawable) getDrawable()).getBitmap(), srcRect, new Point((int) (x * wScale), (int) (y * hScale)));
+                            if (point != null) {
+                                end.x = (int) (point.x / wScale);
+                                end.y = (int) (point.y / hScale);
+                                invalidate();
+                            }
+                        } catch (Exception e) {
+
                         }
                     }
                 });
